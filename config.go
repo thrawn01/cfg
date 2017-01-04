@@ -83,6 +83,12 @@ func validateStruct(typ reflect.Type, val reflect.Value) error {
 			continue
 		} else {
 			if field.Tag.Get("config") != "optional" {
+				if field.Type.Kind() == reflect.Ptr {
+					if val.Field(idx).IsNil() {
+						return errors.New(
+							fmt.Sprintf("Missing required config field: %v", field.Name))
+					}
+				}
 				if val.Field(idx).Len() == 0 {
 					return errors.New(
 						fmt.Sprintf("Missing required config field: %v", field.Name))
